@@ -75,6 +75,7 @@ function App() {
     onPrevious: goToPrevious,
     onNext: goToNext,
     onTogglePlay: toggle,
+    onReset: () => goToStep(0),
   });
 
   // Current step data
@@ -149,6 +150,7 @@ function App() {
         onPause={pause}
         onPrevious={goToPrevious}
         onNext={goToNext}
+        onReset={() => goToStep(0)}
       />
 
       <ProgressBar

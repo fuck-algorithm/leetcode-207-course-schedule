@@ -4,6 +4,7 @@ interface UseKeyboardShortcutsOptions {
   onPrevious: () => void;
   onNext: () => void;
   onTogglePlay: () => void;
+  onReset?: () => void;
   enabled?: boolean;
 }
 
@@ -11,6 +12,7 @@ export function useKeyboardShortcuts({
   onPrevious,
   onNext,
   onTogglePlay,
+  onReset,
   enabled = true,
 }: UseKeyboardShortcutsOptions): void {
   const handleKeyDown = useCallback(
@@ -38,9 +40,14 @@ export function useKeyboardShortcuts({
           event.preventDefault();
           onTogglePlay();
           break;
+        case 'r':
+        case 'R':
+          event.preventDefault();
+          onReset?.();
+          break;
       }
     },
-    [enabled, onPrevious, onNext, onTogglePlay]
+    [enabled, onPrevious, onNext, onTogglePlay, onReset]
   );
 
   useEffect(() => {

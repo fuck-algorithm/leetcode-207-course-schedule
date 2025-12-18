@@ -103,9 +103,23 @@ export default function GraphView({
       .attr('d', 'M 0,-5 L 10,0 L 0,5')
       .attr('fill', 'rgba(108, 108, 108, 0.3)');
 
-    const g = svg.append('g');
+    const g = svg.append('g').attr('class', 'canvas-group');
     const linkGroup = g.append('g').attr('class', 'links');
     const nodeGroup = g.append('g').attr('class', 'nodes');
+
+    // Add zoom and pan behavior
+    const zoom = d3.zoom<SVGSVGElement, unknown>()
+      .scaleExtent([0.3, 3]) // Min 30%, Max 300% zoom
+      .on('zoom', (event) => {
+        g.attr('transform', event.transform);
+      });
+
+    svg.call(zoom);
+    
+    // Double-click to reset view
+    svg.on('dblclick.zoom', () => {
+      svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity);
+    });
 
     const simulation = d3
       .forceSimulation<SimNode>(simData.simNodes)
@@ -408,6 +422,11 @@ export default function GraphView({
           <div className={`result-badge ${isComplete ? 'success' : hasCycle ? 'error' : 'pending'}`}>
             {isComplete ? '✅ 可以完成所有课程' : hasCycle ? '❌ 存在循环依赖' : '⏳ 算法执行中...'}
           </div>
+        </div>
+
+        {/* Bottom right - Controls hint */}
+        <div className="overlay-panel bottom-right controls-hint">
+          <div>🖱️ 滚轮缩放 | 拖拽平移 | 双击重置</div>
         </div>
 
         {/* Bottom - Queue */}

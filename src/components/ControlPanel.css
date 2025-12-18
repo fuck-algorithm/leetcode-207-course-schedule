@@ -21,6 +21,7 @@
   font-size: 14px;
   cursor: pointer;
   transition: background-color 0.2s;
+  flex-shrink: 0;
 }
 
 .control-button:hover:not(:disabled) {
@@ -40,8 +41,9 @@
 .step-indicator {
   color: #d4d4d4;
   font-size: 14px;
-  min-width: 100px;
+  width: 100px;
   text-align: center;
+  flex-shrink: 0;
 }
 
 .step-current {
@@ -58,9 +60,10 @@
 .step-description {
   color: #858585;
   font-size: 13px;
-  max-width: 400px;
-  text-align: center;
+  width: 300px;
+  text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  flex-shrink: 0;
 }

@@ -11,6 +11,7 @@ interface ControlPanelProps {
   onPause: () => void;
   onPrevious: () => void;
   onNext: () => void;
+  onReset: () => void;
 }
 
 export default function ControlPanel({
@@ -24,9 +25,19 @@ export default function ControlPanel({
   onPause,
   onPrevious,
   onNext,
+  onReset,
 }: ControlPanelProps) {
   return (
     <div className="control-panel">
+      <button
+        className="control-button reset-button"
+        onClick={onReset}
+        title="重置 (R)"
+      >
+        ⟲ 重置
+        <span className="keyboard-hint">[R]</span>
+      </button>
+
       <button
         className="control-button"
         onClick={onPrevious}

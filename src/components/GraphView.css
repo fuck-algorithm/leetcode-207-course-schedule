@@ -13,6 +13,11 @@
   position: absolute;
   top: 0;
   left: 0;
+  cursor: grab;
+}
+
+.graph-svg:active {
+  cursor: grabbing;
 }
 
 /* Overlay container */
@@ -340,4 +345,16 @@
 /* Removed link group */
 .link-group.removed {
   display: none;
+}
+
+/* Bottom right controls hint */
+.overlay-panel.bottom-right {
+  bottom: 16px;
+  right: 16px;
+}
+
+.controls-hint {
+  font-size: 11px;
+  color: #6c6c6c;
+  padding: 8px 12px;
 }
