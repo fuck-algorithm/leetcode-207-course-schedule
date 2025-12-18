@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import Header from './Header';
+import InputPanel from './InputPanel';
 import CodePanel from './CodePanel';
 import GraphView from './GraphView';
 import DataStructuresPanel from './DataStructuresPanel';
@@ -11,36 +12,43 @@ import { GraphNode, GraphEdge } from '../algorithm/types';
 import './App.css';
 
 // Default example input
-const DEFAULT_INPUT = {
-  numCourses: 4,
-  prerequisites: [
-    [1, 0],
-    [2, 0],
-    [3, 1],
-    [3, 2],
-  ],
-};
+const DEFAULT_NUM_COURSES = 4;
+const DEFAULT_PREREQUISITES: number[][] = [
+  [1, 0],
+  [2, 0],
+  [3, 1],
+  [3, 2],
+];
 
 function App() {
+  const [numCourses, setNumCourses] = useState(DEFAULT_NUM_COURSES);
+  const [prerequisites, setPrerequisites] = useState(DEFAULT_PREREQUISITES);
+
   // Generate algorithm steps
   const steps = useMemo(
-    () => generateSteps(DEFAULT_INPUT),
-    []
+    () => generateSteps({ numCourses, prerequisites }),
+    [numCourses, prerequisites]
   );
 
   // Build graph data
   const graphData = useMemo(() => {
     const nodes: GraphNode[] = [];
-    for (let i = 0; i < DEFAULT_INPUT.numCourses; i++) {
+    for (let i = 0; i < numCourses; i++) {
       nodes.push({ id: i });
     }
 
-    const edges: GraphEdge[] = DEFAULT_INPUT.prerequisites.map(([from, to]) => ({
+    const edges: GraphEdge[] = prerequisites.map(([from, to]) => ({
       source: from,
       target: to,
     }));
 
     return { nodes, edges };
+  }, [numCourses, prerequisites]);
+
+  // Handle input change
+  const handleInputSubmit = useCallback((newNumCourses: number, newPrerequisites: number[][]) => {
+    setNumCourses(newNumCourses);
+    setPrerequisites(newPrerequisites);
   }, []);
 
   // Playback state
@@ -78,6 +86,12 @@ function App() {
         githubUrl="https://github.com/fuck-algorithm/leetcode-207-course-schedule"
       />
 
+      <InputPanel
+        onSubmit={handleInputSubmit}
+        defaultNumCourses={DEFAULT_NUM_COURSES}
+        defaultPrerequisites={DEFAULT_PREREQUISITES}
+      />
+
       <main className="main-content">
         <section className="code-section">
           <div className="section-title">算法代码</div>
@@ -101,7 +115,7 @@ function App() {
               queue={currentStep.queue}
               stepDescription={currentStep.description}
               learnCount={currentStep.learnCount}
-              numCourses={DEFAULT_INPUT.numCourses}
+              numCourses={numCourses}
             />
           </div>
         </section>
@@ -113,7 +127,7 @@ function App() {
               inDegree={currentStep.inDegree}
               queue={currentStep.queue}
               learnCount={currentStep.learnCount}
-              numCourses={DEFAULT_INPUT.numCourses}
+              numCourses={numCourses}
               highlightedIndex={null}
               isComplete={isComplete}
             />
