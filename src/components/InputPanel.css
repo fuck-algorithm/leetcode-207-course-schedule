@@ -48,9 +48,9 @@
   font-size: 13px;
 }
 
-.run-button {
+.run-button,
+.random-button {
   padding: 6px 16px;
-  background: #0e639c;
   color: white;
   border: none;
   border-radius: 4px;
@@ -59,10 +59,26 @@
   transition: background 0.2s;
 }
 
+.run-button {
+  background: #0e639c;
+}
+
 .run-button:hover {
   background: #1177bb;
 }
 
 .run-button:active {
   background: #0d5a8c;
+}
+
+.random-button {
+  background: #6a4c93;
+}
+
+.random-button:hover {
+  background: #7d5ba6;
+}
+
+.random-button:active {
+  background: #5a3d7a;
 }

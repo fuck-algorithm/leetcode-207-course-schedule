@@ -50,6 +50,33 @@ export default function InputPanel({
     }
   };
 
+  const generateRandom = () => {
+    // 随机课程数量 3-8
+    const num = Math.floor(Math.random() * 6) + 3;
+    
+    // 生成随机 DAG（有向无环图）
+    const prereqs: number[][] = [];
+    const edgeCount = Math.floor(Math.random() * (num * 2)) + 1;
+    const existingEdges = new Set<string>();
+    
+    for (let i = 0; i < edgeCount; i++) {
+      // 确保 from > to 来避免环
+      const to = Math.floor(Math.random() * (num - 1));
+      const from = Math.floor(Math.random() * (num - to - 1)) + to + 1;
+      const key = `${from}-${to}`;
+      
+      if (!existingEdges.has(key)) {
+        existingEdges.add(key);
+        prereqs.push([from, to]);
+      }
+    }
+    
+    setNumCourses(num.toString());
+    setPrerequisites(JSON.stringify(prereqs));
+    setError(null);
+    onSubmit(num, prereqs);
+  };
+
   return (
     <div className="input-panel">
       <div className="input-group">
@@ -74,6 +101,9 @@ export default function InputPanel({
       {error && <div className="input-error">{error}</div>}
       <button className="run-button" onClick={handleSubmit}>
         运行
+      </button>
+      <button className="random-button" onClick={generateRandom}>
+        🎲 随机生成
       </button>
     </div>
   );
