@@ -169,20 +169,14 @@ export default function GraphView({
 
     nodeElements.append('circle')
       .attr('class', 'badge in-degree-badge')
-      .attr('cx', 24)
-      .attr('cy', -24)
-      .attr('r', 14);
-
-    nodeElements.append('text')
-      .attr('class', 'badge-label')
-      .attr('x', 24)
-      .attr('y', -24)
-      .text('入');
+      .attr('cx', 28)
+      .attr('cy', -28)
+      .attr('r', 12);
 
     nodeElements.append('text')
       .attr('class', 'badge-value in-degree-value')
-      .attr('x', 24)
-      .attr('y', -16)
+      .attr('x', 28)
+      .attr('y', -24)
       .text('0');
 
     simulation.on('tick', () => {
