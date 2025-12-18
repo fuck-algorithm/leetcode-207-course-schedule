@@ -1,0 +1,66 @@
+.control-panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  background-color: #252526;
+  border-top: 1px solid #3c3c3c;
+}
+
+.control-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  background-color: #0e639c;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.control-button:hover:not(:disabled) {
+  background-color: #1177bb;
+}
+
+.control-button:disabled {
+  background-color: #3c3c3c;
+  color: #6c6c6c;
+  cursor: not-allowed;
+}
+
+.control-button.play-pause {
+  min-width: 100px;
+}
+
+.step-indicator {
+  color: #d4d4d4;
+  font-size: 14px;
+  min-width: 100px;
+  text-align: center;
+}
+
+.step-current {
+  color: #4ec9b0;
+  font-weight: bold;
+}
+
+.keyboard-hint {
+  color: #6c6c6c;
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+.step-description {
+  color: #858585;
+  font-size: 13px;
+  max-width: 400px;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

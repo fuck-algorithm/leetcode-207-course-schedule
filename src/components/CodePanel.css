@@ -1,0 +1,75 @@
+.code-panel {
+  background-color: #1e1e1e;
+  border-radius: 4px;
+  overflow: auto;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  height: 100%;
+}
+
+.code-container {
+  padding: 12px 0;
+  min-width: fit-content;
+}
+
+.code-line {
+  display: flex;
+  padding: 0 12px;
+  white-space: pre;
+}
+
+.code-line.highlighted {
+  background-color: #264f78;
+}
+
+.line-number {
+  color: #858585;
+  text-align: right;
+  padding-right: 16px;
+  min-width: 40px;
+  user-select: none;
+}
+
+.line-content {
+  flex: 1;
+  color: #d4d4d4;
+}
+
+.variable-values {
+  color: #4ec9b0;
+  margin-left: 20px;
+  font-style: italic;
+  background-color: #2d2d30;
+  padding: 0 8px;
+  border-radius: 3px;
+}
+
+/* Java syntax highlighting */
+.keyword {
+  color: #569cd6;
+}
+
+.type {
+  color: #4ec9b0;
+}
+
+.string {
+  color: #ce9178;
+}
+
+.number {
+  color: #b5cea8;
+}
+
+.comment {
+  color: #6a9955;
+}
+
+.method {
+  color: #dcdcaa;
+}
+
+.operator {
+  color: #d4d4d4;
+}

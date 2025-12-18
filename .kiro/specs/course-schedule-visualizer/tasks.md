@@ -1,0 +1,129 @@
+# Implementation Plan
+
+- [x] 1. Set up project structure and configuration
+  - [x] 1.1 Initialize Vite + React + TypeScript project
+    - Create project with `npm create vite@latest`
+    - Configure TypeScript strict mode
+    - Install dependencies: d3, prismjs, fast-check, vitest
+    - _Requirements: 7.1, 7.2_
+  - [x] 1.2 Configure GitHub Actions for deployment
+    - Create `.github/workflows/deploy.yml`
+    - Set up build and deploy steps for GitHub Pages
+    - _Requirements: 7.1, 7.2, 7.3, 7.4_
+  - [x] 1.3 Set up project file structure
+    - Create directories: components, hooks, algorithm, data, styles
+    - Create placeholder files for each component
+    - _Requirements: 8.1_
+
+- [x] 2. Implement algorithm step generator
+  - [x] 2.1 Define TypeScript interfaces and types
+    - Create `algorithm/types.ts` with all interfaces
+    - Define AlgorithmStep, GraphNode, GraphEdge, VariableState, NodeState types
+    - _Requirements: 5.1, 5.2, 6.1_
+  - [x] 2.2 Implement step generator function
+    - Create `algorithm/stepGenerator.ts`
+    - Generate steps for each line of algorithm execution
+    - Track variable states, node states, queue, and in-degree array at each step
+    - _Requirements: 2.2, 2.3, 5.3, 6.1, 6.4, 6.5_
+  - [x] 2.3 Write property test for initial in-degree correctness
+    - **Property 7: Initial In-Degree Correctness**
+    - **Validates: Requirements 6.1**
+  - [x] 2.4 Write property test for algorithm result correctness
+    - **Property 8: Algorithm Result Correctness**
+    - **Validates: Requirements 6.5**
+
+- [x] 3. Implement Header component
+  - [x] 3.1 Create Header component with title and links
+    - Display "207. 课程表" as clickable title linking to LeetCode
+    - Add GitHub icon in top-right corner linking to repository
+    - _Requirements: 1.1, 1.2, 1.3, 1.4_
+
+- [x] 4. Implement Code Panel component
+  - [x] 4.1 Create CodePanel component with syntax highlighting
+    - Use Prism.js for Java syntax highlighting
+    - Store algorithm Java code in `data/algorithmCode.ts`
+    - _Requirements: 2.1_
+  - [x] 4.2 Implement line highlighting and variable display
+    - Highlight current execution line with distinct background
+    - Display variable values inline after corresponding code lines
+    - _Requirements: 2.2, 2.3, 2.4, 2.5_
+  - [x] 4.3 Write property test for step-line correspondence
+    - **Property 1: Step-Line Correspondence**
+    - **Validates: Requirements 2.2, 2.5**
+  - [x] 4.4 Write property test for variable display consistency
+    - **Property 2: Variable Display Consistency**
+    - **Validates: Requirements 2.3**
+
+- [x] 5. Implement Graph View component
+  - [x] 5.1 Create GraphView component with D3.js
+    - Render course nodes as circles
+    - Render prerequisite edges as directed arrows
+    - Use force-directed layout for node positioning
+    - _Requirements: 5.1, 5.2_
+  - [x] 5.2 Implement node state visualization
+    - Color nodes based on state: unvisited (gray), in-queue (yellow), completed (green)
+    - Animate edge highlighting when processing dependencies
+    - _Requirements: 5.3, 5.4, 5.5_
+  - [x] 5.3 Write property test for graph structure correctness
+    - **Property 5: Graph Structure Correctness**
+    - **Validates: Requirements 5.1, 5.2**
+  - [x] 5.4 Write property test for step state consistency
+    - **Property 6: Step State Consistency**
+    - **Validates: Requirements 5.3, 6.4**
+
+- [x] 6. Implement Data Structures Panel component
+  - [x] 6.1 Create DataStructuresPanel component
+    - Display in-degree array with indices and values
+    - Display queue as horizontal list
+    - Display learnCount counter
+    - Highlight changed values
+    - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5_
+
+- [x] 7. Implement Control Panel and playback logic
+  - [x] 7.1 Create ControlPanel component
+    - Add Play/Pause button with toggle functionality
+    - Add Previous/Next step buttons
+    - Display current step / total steps indicator
+    - Disable buttons at boundaries (first/last step)
+    - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6_
+  - [x] 7.2 Implement usePlayback hook
+    - Manage playback state (playing, paused)
+    - Implement auto-advance with configurable interval
+    - Handle step navigation (previous, next)
+    - _Requirements: 3.1, 3.2, 3.3, 3.4_
+  - [x] 7.3 Implement useKeyboardShortcuts hook
+    - Bind Left Arrow to previous step
+    - Bind Right Arrow to next step
+    - Bind Space to play/pause toggle
+    - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
+  - [x] 7.4 Write property test for step navigation correctness
+    - **Property 3: Step Navigation Correctness**
+    - **Validates: Requirements 3.3, 3.4, 4.1, 4.2**
+  - [x] 7.5 Write property test for play/pause toggle
+    - **Property 4: Play/Pause Toggle**
+    - **Validates: Requirements 4.3**
+
+- [x] 8. Implement App component and layout
+  - [x] 8.1 Create App component with single-screen layout
+    - Use CSS Grid or Flexbox for responsive layout
+    - Arrange components: Header (top), CodePanel (left), GraphView (center), DataStructuresPanel (right), ControlPanel (bottom)
+    - Ensure all components fit within viewport
+    - _Requirements: 8.1, 8.2, 8.3_
+  - [x] 8.2 Wire up state management
+    - Initialize steps from step generator
+    - Connect playback state to all visualization components
+    - Pass current step data to each component
+    - _Requirements: 2.2, 5.3, 6.4_
+
+- [x] 9. Final integration and testing
+  - [x] 9.1 Add example input data
+    - Create default example: numCourses=4, prerequisites=[[1,0],[2,0],[3,1],[3,2]]
+    - Generate steps for the example
+    - _Requirements: 5.1, 6.1_
+  - [x] 9.2 Verify local build and lint
+    - Run `npm run build` to ensure no compilation errors
+    - Run `npm run lint` to ensure no linting errors
+    - _Requirements: 7.4_
+
+- [x] 10. Checkpoint - Ensure all tests pass
+  - Ensure all tests pass, ask the user if questions arise.
