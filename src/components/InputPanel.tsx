@@ -51,27 +51,32 @@ export default function InputPanel({
   };
 
   const generateRandom = () => {
-    // 随机课程数量 3-8
-    const num = Math.floor(Math.random() * 6) + 3;
+    // 使用用户输入的课程数量
+    const num = parseInt(numCourses, 10);
+    if (isNaN(num) || num < 2 || num > 20) {
+      setError('请先输入有效的课程数量 (2-20)');
+      return;
+    }
     
     // 生成随机 DAG（有向无环图）
+    // 边数量：节点数的 1-2 倍，确保图有一定复杂度
     const prereqs: number[][] = [];
-    const edgeCount = Math.floor(Math.random() * (num * 2)) + 1;
+    const maxEdges = Math.min(num * 2, (num * (num - 1)) / 2);
+    const edgeCount = Math.floor(Math.random() * maxEdges) + Math.max(1, Math.floor(num / 2));
     const existingEdges = new Set<string>();
     
-    for (let i = 0; i < edgeCount; i++) {
-      // 确保 from > to 来避免环
+    for (let i = 0; i < edgeCount && prereqs.length < maxEdges; i++) {
+      // 确保 from > to 来避免环（拓扑序：小编号是先修课）
       const to = Math.floor(Math.random() * (num - 1));
       const from = Math.floor(Math.random() * (num - to - 1)) + to + 1;
       const key = `${from}-${to}`;
       
-      if (!existingEdges.has(key)) {
+      if (!existingEdges.has(key) && from !== to) {
         existingEdges.add(key);
         prereqs.push([from, to]);
       }
     }
     
-    setNumCourses(num.toString());
     setPrerequisites(JSON.stringify(prereqs));
     setError(null);
     onSubmit(num, prereqs);
