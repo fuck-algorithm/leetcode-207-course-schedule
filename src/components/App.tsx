@@ -5,6 +5,7 @@ import CodePanel from './CodePanel';
 import GraphView from './GraphView';
 import DataStructuresPanel from './DataStructuresPanel';
 import ControlPanel from './ControlPanel';
+import ProgressBar from './ProgressBar';
 import { usePlayback } from '../hooks/usePlayback';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { generateSteps } from '../algorithm/stepGenerator';
@@ -62,6 +63,7 @@ function App() {
     toggle,
     goToPrevious,
     goToNext,
+    goToStep,
   } = usePlayback({
     totalSteps: steps.length,
     playbackSpeed: 1000,
@@ -146,6 +148,12 @@ function App() {
         onPause={pause}
         onPrevious={goToPrevious}
         onNext={goToNext}
+      />
+
+      <ProgressBar
+        currentStep={currentStepIndex}
+        totalSteps={steps.length}
+        onSeek={goToStep}
       />
     </div>
   );
