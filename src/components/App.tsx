@@ -6,6 +6,7 @@ import GraphView from './GraphView';
 import DataStructuresPanel from './DataStructuresPanel';
 import ControlPanel from './ControlPanel';
 import ProgressBar from './ProgressBar';
+import WechatFloat from './WechatFloat';
 import { usePlayback } from '../hooks/usePlayback';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { generateSteps } from '../algorithm/stepGenerator';
@@ -155,6 +156,8 @@ function App() {
         totalSteps={steps.length}
         onSeek={goToStep}
       />
+
+      <WechatFloat />
     </div>
   );
 }
