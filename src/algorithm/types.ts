@@ -1,7 +1,7 @@
 /**
  * Node state in the graph visualization
  */
-export type NodeState = 'unvisited' | 'in-queue' | 'completed';
+export type NodeState = 'unvisited' | 'in-queue' | 'current' | 'completed';
 
 /**
  * Graph node representing a course
@@ -32,9 +32,16 @@ export interface VariableState {
 /**
  * A single step in the algorithm visualization
  */
+export type StepOperation =
+  | 'init' | 'read' | 'compare' | 'insert' | 'remove'
+  | 'visit' | 'match' | 'enqueue' | 'dequeue' | 'done';
+
 export interface AlgorithmStep {
   id: number;
   description: string;
+  operation: StepOperation;
+  narration: string;
+  anchorIds: string[];
   highlightedLine: number;
   variables: VariableState[];
   nodeStates: Map<number, NodeState>;

@@ -7,6 +7,8 @@ interface ControlPanelProps {
   currentStep: number;
   totalSteps: number;
   stepDescription: string;
+  playbackSpeed: number;
+  onSpeedChange: (speed: number) => void;
   onPlay: () => void;
   onPause: () => void;
   onPrevious: () => void;
@@ -21,6 +23,8 @@ export default function ControlPanel({
   currentStep,
   totalSteps,
   stepDescription,
+  playbackSpeed,
+  onSpeedChange,
   onPlay,
   onPause,
   onPrevious,
@@ -66,6 +70,16 @@ export default function ControlPanel({
         下一步 ▶
         <span className="keyboard-hint">[→]</span>
       </button>
+
+      <label className="speed-control">
+        速度
+        <select aria-label="播放速度" value={playbackSpeed} onChange={(event) => onSpeedChange(Number(event.target.value))}>
+          <option value={1500}>0.75x</option>
+          <option value={1000}>1x</option>
+          <option value={500}>2x</option>
+          <option value={333}>3x</option>
+        </select>
+      </label>
 
       <div className="step-indicator">
         步骤 <span className="step-current">{currentStep + 1}</span> / {totalSteps}

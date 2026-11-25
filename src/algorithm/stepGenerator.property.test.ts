@@ -144,6 +144,25 @@ describe('Property 8: Algorithm Result Correctness', () => {
     );
   });
 
+  it('should provide semantic animation metadata for every step', () => {
+    const steps = generateSteps({
+      numCourses: 4,
+      prerequisites: [[1, 0], [2, 0], [3, 1], [3, 2]],
+    });
+
+    for (const step of steps) {
+      expect(step.operation).toBeTruthy();
+      expect(step.narration.trim().length).toBeGreaterThan(0);
+      expect(step.anchorIds.length).toBeGreaterThan(0);
+      const currentCourses = [...step.nodeStates.values()].filter((state) => state === 'current');
+      expect(currentCourses.length).toBeLessThanOrEqual(1);
+      if (step.operation === 'dequeue' || step.operation === 'compare') {
+        expect(currentCourses.length).toBe(1);
+      }
+    }
+    expect(new Set(steps.map((step) => step.id)).size).toBe(steps.length);
+  });
+
   it('should detect cycles correctly', () => {
     // Test with known cyclic input
     const cyclicInput = {

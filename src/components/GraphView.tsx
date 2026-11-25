@@ -1,6 +1,7 @@
 import { useEffect, useRef, useMemo } from 'react';
 import * as d3 from 'd3';
 import { GraphNode, GraphEdge, NodeState } from '../algorithm/types';
+import { MOTION, motionDuration } from '../algorithm/motion';
 import './GraphView.css';
 
 interface GraphViewProps {
@@ -11,6 +12,8 @@ interface GraphViewProps {
   inDegree?: number[];
   queue?: number[];
   stepDescription?: string;
+  stepOperation?: string;
+  narration?: string;
   learnCount?: number;
   numCourses?: number;
 }
@@ -27,6 +30,7 @@ interface SimLink extends d3.SimulationLinkDatum<SimNode> {
 const STATE_LABELS: Record<NodeState, string> = {
   unvisited: '未访问',
   'in-queue': '队列中',
+  current: '当前处理',
   completed: '已学完',
 };
 
@@ -38,6 +42,8 @@ export default function GraphView({
   inDegree = [],
   queue = [],
   stepDescription = '',
+  stepOperation = 'read',
+  narration = stepDescription,
   learnCount = 0,
   numCourses = 0,
 }: GraphViewProps) {
@@ -61,7 +67,9 @@ export default function GraphView({
     const width = svgRef.current.clientWidth || 800;
     const height = svgRef.current.clientHeight || 600;
 
-    svg.selectAll('*').remove();
+    // This effect runs only when the graph structure changes; step changes update keyed elements below.
+    svg.select('defs').remove();
+    svg.select('.canvas-group').remove();
 
     // Defs for markers
     const defs = svg.append('defs');
@@ -118,7 +126,8 @@ export default function GraphView({
     
     // Double-click to reset view
     svg.on('dblclick.zoom', () => {
-      svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity);
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      svg.transition().duration(reducedMotion ? 0 : 500).call(zoom.transform, d3.zoomIdentity);
     });
 
     const simulation = d3
@@ -134,65 +143,55 @@ export default function GraphView({
       .force('collision', d3.forceCollide().radius(60));
 
     const linkElements = linkGroup
-      .selectAll('g')
-      .data(simData.simLinks)
-      .enter()
-      .append('g')
+      .selectAll<SVGGElement, SimLink>('g.link-group')
+      .data(simData.simLinks, (d) => {
+        const source = typeof d.source === 'object' ? d.source.id : d.source;
+        const target = typeof d.target === 'object' ? d.target.id : d.target;
+        return `${source}->${target}`;
+      })
+      .join('g')
       .attr('class', 'link-group');
 
-    const links = linkElements
-      .append('line')
-      .attr('class', 'edge')
-      .attr('marker-end', 'url(#arrowhead)');
+    linkElements.each(function(d) {
+      const group = d3.select(this);
+      if (group.select('.edge').empty()) {
+        const source = typeof d.source === 'object' ? d.source.id : d.source;
+        const target = typeof d.target === 'object' ? d.target.id : d.target;
+        group.append('line')
+          .attr('class', 'edge')
+          .attr('marker-end', 'url(#arrowhead)');
+        group.append('rect')
+          .attr('class', 'edge-label-bg')
+          .attr('rx', 3)
+          .attr('ry', 3);
+        group.append('text')
+          .attr('class', 'edge-label')
+          .text(`C${target}→C${source}`);
+      }
+    });
 
-    linkElements
-      .append('rect')
-      .attr('class', 'edge-label-bg')
-      .attr('rx', 3)
-      .attr('ry', 3);
-
-    const linkLabels = linkElements
-      .append('text')
-      .attr('class', 'edge-label')
-      .text((d) => {
-        const src = typeof d.source === 'object' ? d.source.id : d.source;
-        const tgt = typeof d.target === 'object' ? d.target.id : d.target;
-        return `C${tgt}→C${src}`;
-      });
+    const links = linkElements.select<SVGLineElement>('.edge');
+    const linkLabels = linkElements.select<SVGTextElement>('.edge-label');
 
     const nodeElements = nodeGroup
-      .selectAll('g')
-      .data(simData.simNodes)
-      .enter()
-      .append('g')
-      .attr('class', 'node unvisited');
+      .selectAll<SVGGElement, SimNode>('g.node')
+      .data(simData.simNodes, (d) => d.id)
+      .join('g')
+      .attr('class', 'node unvisited')
+      .attr('data-node-id', (d) => `course-${d.id}`);
 
-    nodeElements.append('circle')
-      .attr('class', 'node-circle')
-      .attr('r', 32);
+    nodeElements.each(function(d) {
+      const group = d3.select(this);
+      if (group.select('.node-circle').empty()) {
+        group.append('circle').attr('class', 'node-circle').attr('r', 32);
+        group.append('text').attr('class', 'node-id').attr('dy', -8).text(`课程 ${d.id}`);
+        group.append('text').attr('class', 'node-state').attr('dy', 10).text('未访问');
+        group.append('circle').attr('class', 'badge in-degree-badge').attr('cx', 28).attr('cy', -28).attr('r', 12);
+        group.append('text').attr('class', 'badge-value in-degree-value').attr('x', 28).attr('y', -24).text('0');
+      }
+    });
 
-    nodeElements.append('text')
-      .attr('class', 'node-id')
-      .attr('dy', -8)
-      .text((d) => `课程 ${d.id}`);
-
-    nodeElements.append('text')
-      .attr('class', 'node-state')
-      .attr('dy', 10)
-      .text('未访问');
-
-    nodeElements.append('circle')
-      .attr('class', 'badge in-degree-badge')
-      .attr('cx', 28)
-      .attr('cy', -28)
-      .attr('r', 12);
-
-    nodeElements.append('text')
-      .attr('class', 'badge-value in-degree-value')
-      .attr('x', 28)
-      .attr('y', -24)
-      .text('0');
-
+    const coordinates = new Map<number, { x: number; y: number }>();
     simulation.on('tick', () => {
       links
         .attr('x1', (d) => (d.source as SimNode).x || 0)
@@ -210,7 +209,12 @@ export default function GraphView({
         .attr('width', 56)
         .attr('height', 18);
 
-      nodeElements.attr('transform', (d) => `translate(${d.x || 0},${d.y || 0})`);
+      nodeElements.attr('transform', (d) => {
+        const point = { x: d.x || 0, y: d.y || 0 };
+        coordinates.set(d.id, point);
+        return `translate(${point.x},${point.y})`;
+      });
+      if (simulation.alpha() < 0.05) simulation.stop();
     });
 
     const drag = d3.drag<SVGGElement, SimNode>()
@@ -237,34 +241,26 @@ export default function GraphView({
   }, [simData]);
 
 
-  // Update node states and labels - animate completed nodes disappearing
+  // Update node states in place so each course keeps its identity and position.
   useEffect(() => {
     if (!svgRef.current) return;
     const svg = d3.select(svgRef.current);
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const stateDuration = motionDuration(MOTION.stateMs, 1, reducedMotion);
 
     svg.selectAll<SVGGElement, SimNode>('.node').each(function(d) {
       const node = d3.select(this);
       const state = nodeStates.get(d.id) || 'unvisited';
-      const currentClass = node.attr('class');
-      const wasCompleted = currentClass.includes('completed');
-      
-      node.attr('class', `node ${state}`);
-      
-      // Animate fade out when becoming completed
-      if (state === 'completed' && !wasCompleted) {
-        node
-          .style('opacity', 1)
-          .transition()
-          .duration(600)
-          .style('opacity', 0)
-          .on('end', function() {
-            d3.select(this).style('display', 'none');
-          });
-      } else if (state === 'completed') {
-        node.style('display', 'none').style('opacity', 0);
-      } else {
-        node.style('display', null).style('opacity', 1);
-      }
+      node
+        .interrupt('state')
+        .attr('class', `node ${state}`)
+        .attr('data-status', state)
+        .style('display', null)
+        .style('opacity', 1)
+        .select<SVGCircleElement>('.node-circle')
+        .transition('state')
+        .duration(stateDuration)
+        .attr('r', state === 'current' ? 36 : 32);
     });
 
     svg.selectAll<SVGTextElement, SimNode>('.node-state').text((d) => {
@@ -288,7 +284,8 @@ export default function GraphView({
         
         let classes = 'edge';
         if (isActive) classes += ' active';
-        if (sourceState === 'completed') classes += ' removed';
+        classes += ` target-${nodeStates.get(targetId) || 'unvisited'}`;
+        if (sourceState === 'completed') classes += ' released';
         return classes;
       })
       .attr('marker-end', (d) => {
@@ -297,33 +294,22 @@ export default function GraphView({
         const isActive = activeEdge && sourceId === activeEdge.source && targetId === activeEdge.target;
         const sourceState = nodeStates.get(sourceId) || 'unvisited';
         
-        if (sourceState === 'completed') return 'url(#arrowhead-removed)';
+        if (sourceState === 'completed') return 'url(#arrowhead)';
         return isActive ? 'url(#arrowhead-active)' : 'url(#arrowhead)';
       });
 
-    // Animate edges from completed nodes disappearing
     svg.selectAll<SVGGElement, SimLink>('.link-group').each(function(d) {
       const link = d3.select(this);
       const sourceId = typeof d.source === 'object' ? d.source.id : d.source;
+      const targetId = typeof d.target === 'object' ? d.target.id : d.target;
+      const isActive = activeEdge && sourceId === activeEdge.source && targetId === activeEdge.target;
       const sourceState = nodeStates.get(sourceId) || 'unvisited';
-      const currentClass = link.attr('class');
-      const wasRemoved = currentClass.includes('removed');
-      
-      if (sourceState === 'completed' && !wasRemoved) {
-        link
-          .attr('class', 'link-group removed')
-          .style('opacity', 1)
-          .transition()
-          .duration(600)
-          .style('opacity', 0)
-          .on('end', function() {
-            d3.select(this).style('display', 'none');
-          });
-      } else if (sourceState === 'completed') {
-        link.attr('class', 'link-group removed').style('display', 'none').style('opacity', 0);
-      } else {
-        link.attr('class', 'link-group').style('display', null).style('opacity', 1);
-      }
+      const targetState = nodeStates.get(targetId) || 'unvisited';
+      link
+        .interrupt('state')
+        .attr('class', `link-group${sourceState === 'completed' ? ' released' : ''}${isActive ? ' active' : ''} target-${targetState}`)
+        .style('display', null)
+        .style('opacity', 1);
     });
   }, [activeEdge, nodeStates]);
 
@@ -342,18 +328,20 @@ export default function GraphView({
 
   // Stats
   const stats = useMemo(() => {
-    let unvisited = 0, inQueue = 0, completed = 0;
+    let unvisited = 0, inQueue = 0, current = 0, completed = 0;
     nodes.forEach((node) => {
       const state = nodeStates.get(node.id) || 'unvisited';
       if (state === 'unvisited') unvisited++;
       else if (state === 'in-queue') inQueue++;
+      else if (state === 'current') current++;
       else if (state === 'completed') completed++;
     });
-    return { unvisited, inQueue, completed, total: nodes.length };
+    return { unvisited, inQueue, current, completed, total: nodes.length };
   }, [nodes, nodeStates]);
 
-  const isComplete = stats.completed === numCourses;
-  const hasCycle = learnCount < numCourses && queue.length === 0 && stats.completed === learnCount && learnCount > 0;
+  const isComplete = learnCount === numCourses;
+  const hasCycle = stepOperation === 'done' && learnCount < numCourses;
+  const queueCapacity = Math.max(4, numCourses);
 
   return (
     <div className="graph-view">
@@ -370,6 +358,10 @@ export default function GraphView({
             <div className="legend-item">
               <span className="legend-dot unvisited"></span>
               <span>未访问 ({stats.unvisited})</span>
+            </div>
+            <div className="legend-item">
+              <span className="legend-dot current"></span>
+              <span>当前处理 ({stats.current})</span>
             </div>
             <div className="legend-item">
               <span className="legend-dot in-queue"></span>
@@ -390,8 +382,13 @@ export default function GraphView({
         {/* Top center - Step description */}
         {stepDescription && (
           <div className="overlay-panel top-center">
-            <span className="step-icon">📍</span>
-            <span>{stepDescription}</span>
+            <span className="operation-badge" data-operation={stepOperation}>
+              {{ init: '初始化', read: '读取', compare: '比较', insert: '记录依赖', remove: '解除依赖', visit: '完成课程', match: '命中', enqueue: '入队', dequeue: '出队', done: '完成' }[stepOperation] ?? stepOperation}
+            </span>
+            <div className="step-copy">
+              <span>{stepDescription}</span>
+              <span className="step-narration" aria-live="polite">{narration}</span>
+            </div>
           </div>
         )}
 
@@ -414,10 +411,10 @@ export default function GraphView({
             <div className="progress-bar">
               <div 
                 className="progress-fill" 
-                style={{ width: `${(stats.completed / stats.total) * 100}%` }}
+                style={{ width: `${(learnCount / numCourses) * 100}%` }}
               />
             </div>
-            <div className="progress-text">{Math.round((stats.completed / stats.total) * 100)}% 完成</div>
+            <div className="progress-text">{Math.round((learnCount / numCourses) * 100)}% 完成</div>
           </div>
           <div className={`result-badge ${isComplete ? 'success' : hasCycle ? 'error' : 'pending'}`}>
             {isComplete ? '✅ 可以完成所有课程' : hasCycle ? '❌ 存在循环依赖' : '⏳ 算法执行中...'}
@@ -431,19 +428,24 @@ export default function GraphView({
 
         {/* Bottom - Queue */}
         <div className="overlay-panel bottom-left">
-          <div className="panel-title">📥 BFS队列 (先进先出)</div>
-          <div className="queue-container">
-            {queue.length === 0 ? (
-              <span className="queue-empty">队列为空</span>
-            ) : (
-              queue.map((nodeId, idx) => (
-                <div key={idx} className="queue-item">
-                  {idx === 0 && <div className="queue-front">队首 ▼</div>}
-                  <div className="queue-item-id">课程 {nodeId}</div>
-                  <div className="queue-item-hint">入度=0</div>
+          <div className="panel-title">BFS 队列 · 队首 → 队尾 · {queue.length}/{queueCapacity}</div>
+          <div className="queue-direction" aria-hidden="true">← 出队 · 入队 →</div>
+          <div className="queue-container" data-container-kind="queue">
+            {Array.from({ length: queueCapacity }, (_, index) => {
+              const nodeId = queue[index];
+              return (
+                <div key={nodeId ?? `empty-${index}`} className={`queue-slot${nodeId === undefined ? ' empty' : ''}`}>
+                  {index === 0 && queue.length > 0 && <div className="queue-front">队首</div>}
+                  {index === queue.length - 1 && queue.length > 0 && <div className="queue-tail">队尾</div>}
+                  {nodeId === undefined ? <span className="queue-empty">{queue.length === 0 && index === 0 ? '队列为空' : '空槽'}</span> : (
+                    <>
+                      <div className="queue-item-id">课程 {nodeId}</div>
+                      <div className="queue-item-hint">入度为零</div>
+                    </>
+                  )}
                 </div>
-              ))
-            )}
+              );
+            })}
           </div>
         </div>
       </div>

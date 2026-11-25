@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 import Header from './Header';
 import InputPanel from './InputPanel';
 import CodePanel from './CodePanel';
@@ -10,6 +10,7 @@ import WechatFloat from './WechatFloat';
 import { usePlayback } from '../hooks/usePlayback';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { generateSteps } from '../algorithm/stepGenerator';
+import { readPlaybackSpeed, writePlaybackSpeed } from '../algorithm/playbackPreferences';
 import { GraphNode, GraphEdge } from '../algorithm/types';
 import './App.css';
 
@@ -25,6 +26,11 @@ const DEFAULT_PREREQUISITES: number[][] = [
 function App() {
   const [numCourses, setNumCourses] = useState(DEFAULT_NUM_COURSES);
   const [prerequisites, setPrerequisites] = useState(DEFAULT_PREREQUISITES);
+  const [playbackSpeed, setPlaybackSpeed] = useState(() => readPlaybackSpeed(window.localStorage));
+
+  useEffect(() => {
+    writePlaybackSpeed(window.localStorage, playbackSpeed);
+  }, [playbackSpeed]);
 
   // Generate algorithm steps
   const steps = useMemo(
@@ -67,7 +73,7 @@ function App() {
     goToStep,
   } = usePlayback({
     totalSteps: steps.length,
-    playbackSpeed: 1000,
+    playbackSpeed,
   });
 
   // Keyboard shortcuts
@@ -118,6 +124,8 @@ function App() {
               inDegree={currentStep.inDegree}
               queue={currentStep.queue}
               stepDescription={currentStep.description}
+              stepOperation={currentStep.operation}
+              narration={currentStep.narration}
               learnCount={currentStep.learnCount}
               numCourses={numCourses}
             />
@@ -146,6 +154,8 @@ function App() {
         currentStep={currentStepIndex}
         totalSteps={steps.length}
         stepDescription={currentStep.description}
+        playbackSpeed={playbackSpeed}
+        onSpeedChange={setPlaybackSpeed}
         onPlay={play}
         onPause={pause}
         onPrevious={goToPrevious}

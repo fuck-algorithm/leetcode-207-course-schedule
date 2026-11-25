@@ -129,6 +129,16 @@ describe('Property 5: Graph Structure Correctness', () => {
  * **Validates: Requirements 5.3, 6.4**
  */
 describe('Property 6: Step State Consistency', () => {
+  it('marks one course current while it is dequeued before completion', () => {
+    const steps = generateSteps({ numCourses: 1, prerequisites: [] });
+    const dequeue = steps.find((step) => step.operation === 'dequeue');
+    expect([...dequeue!.nodeStates.values()].filter((state) => state === 'current')).toHaveLength(1);
+  });
+
+  it('keeps completed courses visible so the traversal history remains legible', () => {
+    const steps = generateSteps({ numCourses: 2, prerequisites: [] });
+    expect(steps[steps.length - 1]?.nodeStates.get(0)).toBe('completed');
+  });
   it('should have consistent node states with queue contents', () => {
     fc.assert(
       fc.property(
