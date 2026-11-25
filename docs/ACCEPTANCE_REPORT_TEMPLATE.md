@@ -1,38 +1,40 @@
 # Canvas-first 视觉改版验收
 
-## Round 2 — 2026-11-25
+## Round 3 — 2026-11-25
 
-**结论：FAIL（画布空间与 AC-023 动画专项通过；全站 Skill 验收项仍有缺口）**
+**结论：FAIL（全屏画布面积 80%～90% 已按视口面积测量并通过；完整 Skill 验收仍未完成）**
 
-### 本轮完成
+### 面积口径与实测
 
-- 工作区改为画布单主视图，默认只显示代码入口；点击后打开浮层代码抽屉，不再常驻双列/三列挤压主图。
-- 页面改为深石墨实验台视觉：细网格底、石板节点、雾化依赖边、薄荷当前焦点和琥珀活跃边；队列/图例/指标压缩为低干扰浮层。
-- 1366×768 浏览器断言：画布高 >80% viewport、面积 >75% 工作区、代码入口宽 <160px、无纵向页面滚动。
-- 代码示例的 D3 连线标签在平行边处交错偏移，减少重叠。
-- 桌面与手机截图实测；Playwright 还覆盖打开/关闭代码抽屉。
+定义：`屏幕画布面积占比 = graph-canvas-card 的 DOM bounding-box 面积 / (window.innerWidth × window.innerHeight)`。不使用画布高度或工作区占比替代该口径。
 
-### 验证结果
+- Playwright E2E-001 在 1366×768 与 1920×1080 分别直接计算上述面积，断言结果在 80%～90% 范围；本轮两个视口均通过。
+- 画布占可用工作区面积 >80%，SVG 高度 >75% 视口；页面无纵向滚动。
+- 代码只保留一个小型操作入口，按需打开代码抽屉；收起时画布成为单屏主内容。
+- 截图：`test-results/canvas-area-1366.png`、`canvas-area-1920.png`、`canvas-first-1366.png`、`canvas-first-1920.png`。
 
-- `npm run test:coverage`：通过，8 个测试文件 / 35 项测试；lines 86.21%、functions 100%、branches 93.84%。
+### 本轮变更及验证
+
+- 桌面下将课程图作为主舞台、代码改为浮层抽屉；手机视口也不再在首屏预留隐藏代码行。
+- 收紧标题/输入/控制栏和外围 padding，画布节点及边铺开并调整标签避免重叠。
+- `npm run test:coverage`：通过，35 项单测；lines 86.21%、functions 100%、branches 93.84%。
 - `npm run lint`：通过。
 - `npm run build`：通过（TypeScript + Vite）。
-- `npm run test:e2e`：通过，2 项（动画/画布场景、E2E-015 配色检查）；再次重跑通过。
+- `npm run test:e2e`：通过，3 项（AC-023 动画、E2E-001 两档面积占比、E2E-015 配色）；串行运行避免本机 Chromium 并发崩溃。
 - `git diff --check`：通过。
-- 截图：`test-results/canvas-first-1366.png`、`canvas-first-1920.png`、`animation-step-init.png`、`animation-step-prerequisite.png`、`animation-playback-1x.png`、`animation-playback-3x.png`、`animation-reduced-motion.png`；Playwright video 位于 `test-results/` 的测试目录。
 
 ### 剩余缺口
 
-- E2E 矩阵覆盖 2 项，仍缺其余项目；`qa:guard` / `qa:full` 未配置。
-- 完整 AC-001～024、双语界面、GitHub metadata、完整 README/Pages 规范、全站 Rubric 及所有 Blocking 项未验收，不能宣称整站 PASS。
-- 覆盖率汇总达标；但 hooks 范围的 lines 为 53.9%（低于 60），需后续补 hook 单测。
+- 全 E2E 矩阵仅覆盖 3 项，`qa:guard` / `qa:full` 未配置。
+- 未完整验收 AC-001～024、全站双语/元数据/README 等要求，也未完成 Rubric 全站评分；不宣称整体 Skill PASS。
+- hooks 覆盖率 lines 53.9%，需后续补齐 hook 测试。
 
 ### B1-B7
 
-- B1：FAIL，全站 Blocking 要求尚未全部满足。
-- B2：PASS（lint/build/coverage/E2E 命令均通过）。
-- B3：FAIL，仅 2 项 Playwright 场景。
+- B1：FAIL，全站 Blocking 要求仍未全满足。
+- B2：PASS（lint/build/coverage/E2E 均通过）。
+- B3：FAIL，当前 3 项测试。
 - B4：FAIL，AC-001～024 未逐项验收。
-- B5：FAIL/未确认，尚未完成全站缺陷审查。
+- B5：FAIL/未确认，未执行完整全站缺陷审查。
 - B6：FAIL，未完成全站 Rubric 评分。
-- B7：FAIL，本轮画布截图/录屏已留存，但全站证据集缺失。
+- B7：FAIL，画布面积截图和动画证据已留存，但完整验收证据集不足。

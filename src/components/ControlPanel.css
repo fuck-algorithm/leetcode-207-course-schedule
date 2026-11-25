@@ -1,6 +1,6 @@
 .control-panel {
   display: flex;
-  flex: 0 0 46px;
+  flex: 0 0 42px;
   justify-content: center;
   align-items: center;
   gap: 8px;

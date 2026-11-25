@@ -19,6 +19,7 @@ test('AC-023 animation states, playback, stable nodes, and reduced motion', asyn
     const svg = document.querySelector('.graph-svg')!.getBoundingClientRect();
     return {
       canvasViewportHeightRatio: canvas.height / window.innerHeight,
+      canvasViewportAreaShare: (canvas.width * canvas.height) / (window.innerWidth * window.innerHeight),
       canvasWorkspaceAreaShare: (canvas.width * canvas.height) / (workspace.width * workspace.height),
       svgHeightRatio: svg.height / window.innerHeight,
       canvasWidthShare: canvas.width / (canvas.width + code.width),
@@ -26,8 +27,10 @@ test('AC-023 animation states, playback, stable nodes, and reduced motion', asyn
       pageScrolls: document.documentElement.scrollHeight > window.innerHeight,
     };
   });
+  expect(layout.canvasViewportAreaShare).toBeGreaterThanOrEqual(0.8);
+  expect(layout.canvasViewportAreaShare).toBeLessThanOrEqual(0.9);
   expect(layout.canvasViewportHeightRatio).toBeGreaterThan(0.8);
-  expect(layout.canvasWorkspaceAreaShare).toBeGreaterThan(0.75);
+  expect(layout.canvasWorkspaceAreaShare).toBeGreaterThan(0.8);
   expect(layout.svgHeightRatio).toBeGreaterThan(0.75);
   expect(layout.canvasWidthShare).toBeGreaterThan(0.72);
   expect(layout.visibleCodeRailWidth).toBeLessThan(160);
@@ -100,6 +103,21 @@ test('AC-023 animation states, playback, stable nodes, and reduced motion', asyn
   await expect(page.locator('.node-circle').first()).toHaveCSS('transition-duration', '1e-05s');
   await page.screenshot({ path: 'test-results/animation-reduced-motion.png' });
   expect(captures).toEqual([]);
+});
+
+test('E2E-001 canvas screen-area budget at 1366 and 1920 widths', async ({ page }) => {
+  for (const viewport of [{ width: 1366, height: 768 }, { width: 1920, height: 1080 }]) {
+    await page.setViewportSize(viewport);
+    await page.goto('/');
+    const canvas = page.locator('[data-testid="graph-canvas-card"]');
+    const areaShare = await canvas.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      return (rect.width * rect.height) / (window.innerWidth * window.innerHeight);
+    });
+    expect(areaShare, `canvas screen area at ${viewport.width}x${viewport.height}`).toBeGreaterThanOrEqual(0.8);
+    expect(areaShare, `canvas screen area at ${viewport.width}x${viewport.height}`).toBeLessThanOrEqual(0.9);
+    await page.screenshot({ path: `test-results/canvas-area-${viewport.width}.png` });
+  }
 });
 
 test('E2E-015 forbids purple theme colors', async ({ page }) => {
