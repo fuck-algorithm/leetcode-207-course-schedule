@@ -3,7 +3,6 @@ import Header from './Header';
 import InputPanel from './InputPanel';
 import CodePanel from './CodePanel';
 import GraphView from './GraphView';
-import DataStructuresPanel from './DataStructuresPanel';
 import ControlPanel from './ControlPanel';
 import ProgressBar from './ProgressBar';
 import WechatFloat from './WechatFloat';
@@ -24,6 +23,7 @@ const DEFAULT_PREREQUISITES: number[][] = [
 ];
 
 function App() {
+  const [showCode, setShowCode] = useState(false);
   const [numCourses, setNumCourses] = useState(DEFAULT_NUM_COURSES);
   const [prerequisites, setPrerequisites] = useState(DEFAULT_PREREQUISITES);
   const [playbackSpeed, setPlaybackSpeed] = useState(() => readPlaybackSpeed(window.localStorage));
@@ -86,7 +86,6 @@ function App() {
 
   // Current step data
   const currentStep = steps[currentStepIndex];
-  const isComplete = currentStepIndex === steps.length - 1;
 
   return (
     <div className="app">
@@ -102,18 +101,8 @@ function App() {
         defaultPrerequisites={DEFAULT_PREREQUISITES}
       />
 
-      <main className="main-content">
-        <section className="code-section">
-          <div className="section-title">算法代码</div>
-          <div className="section-content">
-            <CodePanel
-              highlightedLine={currentStep.highlightedLine}
-              variables={currentStep.variables}
-            />
-          </div>
-        </section>
-
-        <section className="graph-section">
+      <main className={`main-content${showCode ? ' code-open' : ''}`}>
+        <section className="graph-section" data-testid="graph-canvas-card">
           <div className="section-title">课程依赖图</div>
           <div className="section-content">
             <GraphView
@@ -132,19 +121,28 @@ function App() {
           </div>
         </section>
 
-        <section className="data-section">
-          <div className="section-title">数据结构</div>
-          <div className="section-content">
-            <DataStructuresPanel
-              inDegree={currentStep.inDegree}
-              queue={currentStep.queue}
-              learnCount={currentStep.learnCount}
-              numCourses={numCourses}
-              highlightedIndex={null}
-              isComplete={isComplete}
-            />
-          </div>
-        </section>
+        {showCode && (
+          <aside className="code-drawer" aria-label="算法代码">
+            <div className="section-title">算法代码</div>
+            <button className="drawer-close" aria-label="关闭代码面板" onClick={() => setShowCode(false)}>×</button>
+            <div className="section-content">
+              <CodePanel
+                highlightedLine={currentStep.highlightedLine}
+                variables={currentStep.variables}
+              />
+            </div>
+          </aside>
+        )}
+        <button
+          className="code-toggle"
+          aria-label={showCode ? '关闭代码面板' : '打开算法代码'}
+          aria-expanded={showCode}
+          onClick={() => setShowCode((visible) => !visible)}
+        >
+          <span aria-hidden="true">{showCode ? '‹' : '{ }'}</span>
+          {showCode ? '收起代码' : '查看代码'}
+        </button>
+        <div className="canvas-measure" aria-label="画布主视图">主视图 · 课程依赖</div>
       </main>
 
       <ControlPanel

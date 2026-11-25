@@ -1,41 +1,52 @@
 .control-panel {
   display: flex;
+  flex: 0 0 46px;
   justify-content: center;
   align-items: center;
-  gap: 16px;
-  padding: 12px 20px;
-  background-color: #252526;
-  border-top: 1px solid #3c3c3c;
+  gap: 8px;
+  padding: 4px 12px;
+  border-top: 1px solid rgba(139, 178, 161, 0.12);
+  background: #131e1b;
 }
 
 .control-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  background-color: #0e639c;
-  color: #ffffff;
-  font-size: 14px;
+  gap: 5px;
+  padding: 7px 10px;
+  border: 1px solid #314a40;
+  border-radius: 7px;
+  background: #20322b;
+  color: #d7e5de;
+  font-size: 11px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, border-color 0.2s;
   flex-shrink: 0;
 }
 
 .control-button:hover:not(:disabled) {
-  background-color: #1177bb;
+  border-color: #4c816a;
+  background: #294438;
 }
 
 .control-button:disabled {
-  background-color: #3c3c3c;
-  color: #6c6c6c;
+  border-color: #2a3631;
+  background: #1b2521;
+  color: #617069;
   cursor: not-allowed;
 }
 
 .control-button.play-pause {
-  min-width: 100px;
+  min-width: 92px;
+  border-color: #39886c;
+  background: #24624e;
+  color: #effaf4;
+}
+
+.control-button.play-pause:hover:not(:disabled) {
+  border-color: #58b994;
+  background: #2d795f;
 }
 
 .speed-control {
@@ -55,31 +66,64 @@
 }
 
 .step-indicator {
-  color: #d4d4d4;
-  font-size: 14px;
-  width: 100px;
+  color: #a7b8af;
+  font-size: 11px;
+  width: 88px;
   text-align: center;
   flex-shrink: 0;
 }
 
 .step-current {
-  color: #4ec9b0;
+  color: #72d7b2;
   font-weight: bold;
 }
 
 .keyboard-hint {
-  color: #6c6c6c;
-  font-size: 12px;
+  color: #799087;
+  font-size: 10px;
   margin-left: 4px;
 }
 
 .step-description {
-  color: #858585;
-  font-size: 13px;
-  width: 300px;
+  color: #75877e;
+  font-size: 10px;
+  width: 180px;
   text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  flex-shrink: 0;
+  flex-shrink: 1;
+}
+
+@media (max-width: 760px) {
+  .control-panel {
+    flex-basis: 48px;
+    justify-content: flex-start;
+    gap: 4px;
+    padding-inline: 6px;
+  }
+
+  .control-button {
+    padding: 7px 8px;
+  }
+
+  .keyboard-hint,
+  .step-description {
+    display: none;
+  }
+
+  .speed-control {
+    gap: 3px;
+    font-size: 10px;
+  }
+
+  .speed-control select {
+    padding: 5px 3px;
+    font-size: 10px;
+  }
+
+  .step-indicator {
+    width: 66px;
+    font-size: 10px;
+  }
 }

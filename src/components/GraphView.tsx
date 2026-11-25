@@ -27,6 +27,20 @@ interface SimLink extends d3.SimulationLinkDatum<SimNode> {
   target: SimNode | number;
 }
 
+function edgeLabelPoint(link: SimLink, index: number) {
+  const source = link.source as SimNode;
+  const target = link.target as SimNode;
+  const dx = (target.x ?? 0) - (source.x ?? 0);
+  const dy = (target.y ?? 0) - (source.y ?? 0);
+  const length = Math.hypot(dx, dy) || 1;
+  const side = index % 2 === 0 ? 1 : -1;
+  const offset = 19 * side;
+  return {
+    x: ((source.x ?? 0) + (target.x ?? 0)) / 2 - (dy / length) * offset,
+    y: ((source.y ?? 0) + (target.y ?? 0)) / 2 + (dx / length) * offset,
+  };
+}
+
 const STATE_LABELS: Record<NodeState, string> = {
   unvisited: '未访问',
   'in-queue': '队列中',
@@ -64,8 +78,8 @@ export default function GraphView({
     if (!svgRef.current) return;
 
     const svg = d3.select(svgRef.current);
-    const width = svgRef.current.clientWidth || 800;
-    const height = svgRef.current.clientHeight || 600;
+    const width = svgRef.current.clientWidth || 1100;
+    const height = svgRef.current.clientHeight || 700;
 
     // This effect runs only when the graph structure changes; step changes update keyed elements below.
     svg.select('defs').remove();
@@ -136,11 +150,11 @@ export default function GraphView({
         'link',
         d3.forceLink<SimNode, SimLink>(simData.simLinks)
           .id((d) => d.id)
-          .distance(150)
+          .distance(Math.max(230, Math.min(width, height) * 0.42))
       )
-      .force('charge', d3.forceManyBody().strength(-500))
-      .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('collision', d3.forceCollide().radius(60));
+      .force('charge', d3.forceManyBody().strength(-760))
+      .force('center', d3.forceCenter(width * 0.52, height * 0.48))
+      .force('collision', d3.forceCollide().radius(72));
 
     const linkElements = linkGroup
       .selectAll<SVGGElement, SimLink>('g.link-group')
@@ -200,12 +214,12 @@ export default function GraphView({
         .attr('y2', (d) => (d.target as SimNode).y || 0);
 
       linkLabels
-        .attr('x', (d) => ((d.source as SimNode).x! + (d.target as SimNode).x!) / 2)
-        .attr('y', (d) => ((d.source as SimNode).y! + (d.target as SimNode).y!) / 2 - 12);
+        .attr('x', (d, index) => edgeLabelPoint(d, index).x)
+        .attr('y', (d, index) => edgeLabelPoint(d, index).y);
 
       linkElements.selectAll<SVGRectElement, SimLink>('.edge-label-bg')
-        .attr('x', (d) => ((d.source as SimNode).x! + (d.target as SimNode).x!) / 2 - 28)
-        .attr('y', (d) => ((d.source as SimNode).y! + (d.target as SimNode).y!) / 2 - 24)
+        .attr('x', (d, index) => edgeLabelPoint(d, index).x - 28)
+        .attr('y', (d, index) => edgeLabelPoint(d, index).y - 9)
         .attr('width', 56)
         .attr('height', 18);
 

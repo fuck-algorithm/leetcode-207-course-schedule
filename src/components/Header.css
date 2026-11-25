@@ -1,16 +1,23 @@
 .header {
+  position: relative;
+  z-index: 5;
   display: flex;
-  justify-content: space-between;
+  flex: 0 0 46px;
   align-items: center;
-  padding: 12px 20px;
-  background-color: #252526;
-  border-bottom: 1px solid #3c3c3c;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(139, 178, 161, 0.16);
+  background: rgba(15, 24, 22, 0.96);
 }
 
 .header-title {
-  color: #4ec9b0;
-  font-size: 18px;
-  font-weight: 600;
+  max-width: calc(100% - 150px);
+  overflow: hidden;
+  color: #d9e9e2;
+  font-size: 16px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   text-decoration: none;
   transition: color 0.2s;
 }

@@ -1,32 +1,36 @@
 .input-panel {
   display: flex;
+  flex: 0 0 48px;
   align-items: center;
-  gap: 16px;
-  padding: 12px 20px;
-  background: #1e1e1e;
-  border-bottom: 1px solid #333;
-  flex-wrap: wrap;
+  gap: 10px;
+  padding: 4px 16px;
+  border-bottom: 1px solid rgba(139, 178, 161, 0.12);
+  background: #131e1b;
+  flex-wrap: nowrap;
+  overflow: hidden;
 }
 
 .input-group {
   display: flex;
+  min-width: 0;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
 }
 
 .input-group label {
-  color: #9cdcfe;
-  font-size: 14px;
+  color: #91a79e;
+  font-size: 11px;
   white-space: nowrap;
 }
 
 .input-group input {
-  padding: 6px 10px;
-  border: 1px solid #444;
-  border-radius: 4px;
-  background: #2d2d2d;
-  color: #d4d4d4;
-  font-size: 14px;
+  min-width: 0;
+  padding: 6px 9px;
+  border: 1px solid #344842;
+  border-radius: 6px;
+  background: #1a2824;
+  color: #dce8e2;
+  font-size: 12px;
   font-family: 'Consolas', 'Monaco', monospace;
 }
 
@@ -40,7 +44,8 @@
 
 .input-group input:focus {
   outline: none;
-  border-color: #007acc;
+  border-color: #58b99a;
+  box-shadow: 0 0 0 2px rgba(88, 185, 154, 0.14);
 }
 
 .input-error {
@@ -50,35 +55,65 @@
 
 .run-button,
 .random-button {
-  padding: 6px 16px;
-  color: white;
-  border: none;
-  border-radius: 4px;
+  padding: 6px 12px;
+  color: #e4f0eb;
+  border: 1px solid transparent;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
-  transition: background 0.2s;
+  font-size: 11px;
+  white-space: nowrap;
+  transition: background 0.2s, border-color 0.2s;
 }
 
 .run-button {
-  background: #0e639c;
+  background: #1d705b;
+  border-color: #348d72;
 }
 
 .run-button:hover {
-  background: #1177bb;
+  background: #26876c;
 }
 
 .run-button:active {
-  background: #0d5a8c;
+  background: #185d4b;
 }
 
 .random-button {
-  background: #6a4c93;
+  background: #253833;
+  border-color: #3b5a4f;
 }
 
 .random-button:hover {
-  background: #7d5ba6;
+  background: #304a40;
 }
 
 .random-button:active {
-  background: #5a3d7a;
+  background: #1e302a;
+}
+
+@media (max-width: 760px) {
+  .input-panel {
+    flex-basis: 44px;
+    gap: 6px;
+    padding-inline: 8px;
+  }
+
+  .input-group label {
+    display: none;
+  }
+
+  .input-group:first-child input {
+    width: 48px;
+  }
+
+  .input-group input[type="text"] {
+    width: min(34vw, 220px);
+  }
+
+  .random-button {
+    max-width: 42px;
+    overflow: hidden;
+    padding-inline: 8px;
+    text-overflow: clip;
+  }
 }

@@ -1,18 +1,23 @@
 .graph-view {
-  background-color: #1e1e1e;
-  border-radius: 4px;
-  height: 100%;
+  position: absolute;
+  inset: 0;
   width: 100%;
+  height: 100%;
   overflow: hidden;
-  position: relative;
+  border-radius: inherit;
+  background:
+    radial-gradient(ellipse at 52% 48%, rgba(55, 103, 86, 0.12), transparent 58%),
+    linear-gradient(rgba(111, 154, 137, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(111, 154, 137, 0.035) 1px, transparent 1px),
+    #111a18;
+  background-size: auto, 32px 32px, 32px 32px, auto;
 }
 
 .graph-svg {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
   cursor: grab;
 }
 
@@ -63,21 +68,29 @@
 }
 
 .overlay-panel.top-left {
-  top: 16px;
-  left: 16px;
+  top: 48px;
+  left: 12px;
+  max-width: 185px;
+  padding: 10px 12px;
+  border-color: rgba(133, 171, 153, 0.19);
+  background: rgba(16, 27, 23, 0.92);
+  backdrop-filter: blur(10px);
 }
 
 .overlay-panel.top-center {
-  top: 16px;
+  top: 12px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
-  width: min(190px, 34%);
-  padding: 6px;
-  background: rgba(30, 30, 30, 0.96);
-  border-color: #3c3c3c;
+  width: min(360px, 42%);
+  min-height: 36px;
+  padding: 6px 10px;
+  border-color: rgba(109, 164, 140, 0.24);
+  background: rgba(18, 31, 27, 0.92);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(10px);
 }
 
 .step-copy {
@@ -103,15 +116,82 @@
 }
 
 .overlay-panel.top-right {
-  top: 16px;
-  right: 16px;
+  top: 48px;
+  right: 12px;
+  min-width: 150px;
+  padding: 10px 12px;
+  border-color: rgba(133, 171, 153, 0.19);
+  background: rgba(16, 27, 23, 0.92);
+  backdrop-filter: blur(10px);
 }
 
 .overlay-panel.bottom-left {
-  bottom: 16px;
-  left: 16px;
-  max-width: min(560px, 55%);
+  bottom: 8px;
+  left: 50%;
+  max-width: min(640px, 66%);
+  padding: 10px 12px;
+  transform: translateX(-50%);
+  border-color: rgba(133, 171, 153, 0.19);
+  background: rgba(16, 27, 23, 0.94);
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(10px);
   overflow-x: auto;
+}
+
+.graph-section .panel-title {
+  margin-bottom: 8px;
+  color: #9eb8ad;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+.graph-section .top-right .panel-title {
+  color: #b6c9c0;
+}
+
+.graph-section .legend {
+  gap: 5px;
+  margin-bottom: 8px;
+}
+
+.graph-section .legend-item {
+  gap: 7px;
+  color: #b5c4bd;
+  font-size: 10px;
+}
+
+.graph-section .legend-dot {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 10px;
+  border-width: 1px;
+}
+
+.graph-section .legend-hint {
+  color: #82938b;
+  font-size: 9px;
+}
+
+.graph-section .stat-row {
+  color: #85978e;
+  font-size: 10px;
+}
+
+.graph-section .stat-value {
+  color: #d4e3dc;
+}
+
+.graph-section .progress-section {
+  margin: 8px 0;
+}
+
+.graph-section .result-badge {
+  padding: 5px 7px;
+  font-size: 10px;
+}
+
+.graph-section .panel-title {
+  color: #a9c1b6;
 }
 
 /* Panel content */
@@ -258,7 +338,7 @@
 .queue-direction {
   position: absolute;
   right: 12px;
-  bottom: 10px;
+  bottom: 6px;
   color: #abb2bf;
   font-size: 10px;
   pointer-events: none;
@@ -274,8 +354,8 @@
 .queue-slot {
   position: relative;
   min-width: 60px;
-  min-height: 42px;
-  padding: 6px 8px;
+  min-height: 38px;
+  padding: 5px 7px;
   border: 1px solid #b07a12;
   border-radius: 6px;
   background: #d19a66;
@@ -284,7 +364,8 @@
 
 .queue-slot.empty {
   border-style: dashed;
-  background: rgba(221, 233, 230, 0.06);
+  border-color: #42574d;
+  background: rgba(221, 233, 230, 0.035);
 }
 
 .queue-empty,
@@ -303,7 +384,7 @@
 .queue-front,
 .queue-tail {
   font-size: 9px;
-  color: rgba(30, 30, 30, 0.7);
+  color: #422f17;
   margin-bottom: 2px;
 }
 
@@ -315,7 +396,7 @@
 
 .queue-item-hint {
   font-size: 9px;
-  color: rgba(30, 30, 30, 0.6);
+  color: #513e26;
 }
 
 
@@ -336,14 +417,16 @@
 }
 
 .node.in-queue .node-circle {
-  fill: #d19a66;
-  stroke: #e5c07b;
+  fill: #c28f58;
+  stroke: #f0c589;
+  stroke-width: 3px;
 }
 
 .node.current .node-circle {
-  fill: #2f9e7d;
-  stroke: #b5f0df;
+  fill: #348f73;
+  stroke: #a8efd5;
   stroke-width: 4px;
+  filter: drop-shadow(0 0 8px rgba(88, 207, 164, 0.42));
 }
 
 .edge.released {
@@ -358,21 +441,26 @@
 }
 
 .node.completed .node-circle {
-  fill: #98c379;
-  stroke: #b5e890;
+  fill: #496b5c;
+  stroke: #8fb6a2;
+  stroke-width: 3px;
 }
 
 .node .node-id {
-  fill: #ffffff;
+  fill: #e8f2ed;
   font-size: 14px;
-  font-weight: bold;
+  font-weight: 700;
   text-anchor: middle;
+  paint-order: stroke;
+  stroke: rgba(16, 25, 22, 0.46);
+  stroke-width: 2px;
 }
 
 .node .node-state {
-  fill: rgba(255, 255, 255, 0.7);
-  font-size: 11px;
+  fill: #a9bbb2;
+  font-size: 10px;
   text-anchor: middle;
+  letter-spacing: 0.02em;
 }
 
 /* Badge styles */
@@ -406,14 +494,17 @@
 
 /* Edge styles */
 .edge {
-  stroke: #6c6c6c;
-  stroke-width: 2px;
+  stroke: #536962;
+  stroke-width: 1.7px;
+  opacity: 0.86;
   transition: stroke 0.3s, stroke-width 0.3s, opacity 0.5s, stroke-dasharray 0.3s;
 }
 
 .edge.active {
-  stroke: #e8b04b;
-  stroke-width: 4px;
+  stroke: #f0bd69;
+  stroke-width: 3px;
+  opacity: 1;
+  filter: drop-shadow(0 0 4px rgba(240, 189, 105, 0.35));
 }
 
 .edge.removed {
@@ -421,19 +512,19 @@
 }
 
 .edge-arrow {
-  fill: #6c6c6c;
+  fill: #718c81;
 }
 
 .edge-label-bg {
-  fill: rgba(30, 30, 30, 0.9);
-  stroke: #3c3c3c;
+  fill: #17231f;
+  stroke: #344a41;
   stroke-width: 1px;
   transition: opacity 0.5s;
 }
 
 .edge-label {
-  fill: #abb2bf;
-  font-size: 11px;
+  fill: #b9ccc2;
+  font-size: 10px;
   text-anchor: middle;
   dominant-baseline: middle;
   transition: opacity 0.5s;
@@ -454,6 +545,50 @@
   font-size: 11px;
   color: #6c6c6c;
   padding: 8px 12px;
+}
+
+@media (max-width: 760px) {
+  .overlay-panel.top-left {
+    top: 50px;
+    left: 8px;
+    max-width: 138px;
+    padding: 7px 8px;
+  }
+
+  .overlay-panel.top-center {
+    top: 8px;
+    width: min(260px, 48%);
+    gap: 5px;
+    padding: 5px 7px;
+  }
+
+  .overlay-panel.top-right {
+    top: 50px;
+    right: 8px;
+    min-width: 118px;
+    padding: 7px 8px;
+  }
+
+  .overlay-panel.bottom-left {
+    bottom: 8px;
+    max-width: 96%;
+    padding: 7px 8px;
+  }
+
+  .queue-slot {
+    min-width: 44px;
+    min-height: 34px;
+    padding: 4px 5px;
+  }
+
+  .queue-item-id {
+    font-size: 10px;
+  }
+
+  .queue-direction,
+  .controls-hint {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

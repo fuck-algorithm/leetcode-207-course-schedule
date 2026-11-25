@@ -1,16 +1,16 @@
 .code-panel {
-  background-color: #1e1e1e;
-  border-radius: 4px;
-  overflow: auto;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-  font-size: 13px;
-  line-height: 1.5;
   height: 100%;
+  overflow: auto;
+  border-radius: 0 0 12px 12px;
+  background: #121c19;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 11px;
+  line-height: 1.55;
 }
 
 .code-container {
-  padding: 12px 0;
   min-width: fit-content;
+  padding: 8px 0;
 }
 
 .code-line {
@@ -20,11 +20,12 @@
 }
 
 .code-line.highlighted {
-  background-color: #264f78;
+  border-left: 2px solid #65cda5;
+  background: linear-gradient(90deg, rgba(76, 153, 121, 0.23), rgba(76, 153, 121, 0.05));
 }
 
 .line-number {
-  color: #858585;
+  color: #65766f;
   text-align: right;
   padding-right: 16px;
   min-width: 40px;
@@ -37,21 +38,21 @@
 }
 
 .variable-values {
-  color: #4ec9b0;
+  color: #8ed5b5;
   margin-left: 20px;
   font-style: italic;
-  background-color: #2d2d30;
+  background-color: #21332c;
   padding: 0 8px;
   border-radius: 3px;
 }
 
 /* Java syntax highlighting */
 .keyword {
-  color: #569cd6;
+  color: #75b6d6;
 }
 
 .type {
-  color: #4ec9b0;
+  color: #74cdb1;
 }
 
 .string {
